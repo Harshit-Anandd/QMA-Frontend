@@ -1,6 +1,6 @@
 // Auth Types
 export interface RegisterRequest {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
 }
@@ -11,16 +11,28 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  token: string;
-  email: string;
-  role: string;
-  name: string;
+  tokenType: string;
+  accessToken: string;
+  expiresInSeconds: number;
+  user: User;
+}
+
+export interface OAuthCallbackParams {
+  accessToken?: string;
+  tokenType?: string;
+  expiresIn?: string;
+  error?: string;
+  message?: string;
 }
 
 export interface User {
+  id: number;
   email: string;
+  fullName: string;
   role: string;
-  name: string;
+  provider: string;
+  enabled: boolean;
+  createdAt: string;
 }
 
 // Quantity Types
@@ -36,9 +48,9 @@ export interface QuantityUnitDTO {
 }
 
 export interface QuantityInputDTO {
-  quantity1: QuantityUnitDTO;
-  quantity2?: QuantityUnitDTO;
-  targetUnit?: string;
+  thisQuantityDTO: QuantityUnitDTO;
+  thatQuantityDTO?: QuantityUnitDTO;
+  targetQuantityDTO?: QuantityUnitDTO;
 }
 
 export interface QuantityMeasurementDTO {

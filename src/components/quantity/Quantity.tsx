@@ -74,12 +74,12 @@ export const Quantity: React.FC = () => {
     setError('');
     try {
       const input: QuantityInputDTO = {
-        quantity1: {
+        thisQuantityDTO: {
           value: parseFloat(value1),
           unit: unit1,
           measurementType: selectedType.measurementType,
         },
-        quantity2: {
+        thatQuantityDTO: {
           value: parseFloat(value2),
           unit: unit2,
           measurementType: selectedType.measurementType,
@@ -105,12 +105,16 @@ export const Quantity: React.FC = () => {
     setError('');
     try {
       const input: QuantityInputDTO = {
-        quantity1: {
+        thisQuantityDTO: {
           value: parseFloat(value1),
           unit: unit1,
           measurementType: selectedType.measurementType,
         },
-        targetUnit,
+        targetQuantityDTO: {
+          value: 0,
+          unit: targetUnit,
+          measurementType: selectedType.measurementType,
+        },
       };
 
       const response = await quantityService.convert(input);
@@ -132,12 +136,12 @@ export const Quantity: React.FC = () => {
     setError('');
     try {
       const input: QuantityInputDTO = {
-        quantity1: {
+        thisQuantityDTO: {
           value: parseFloat(value1),
           unit: unit1,
           measurementType: selectedType.measurementType,
         },
-        quantity2: {
+        thatQuantityDTO: {
           value: parseFloat(value2),
           unit: unit2,
           measurementType: selectedType.measurementType,
@@ -153,7 +157,7 @@ export const Quantity: React.FC = () => {
           response = await quantityService.subtract(input);
           break;
         case '*':
-          response = await quantityService.divide(input); // This might need adjustment based on backend
+          response = await quantityService.divide(input);
           break;
         case '/':
           response = await quantityService.divide(input);

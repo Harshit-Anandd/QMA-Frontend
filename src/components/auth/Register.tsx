@@ -7,7 +7,7 @@ import './Auth.css';
 export const Register: React.FC = () => {
   const navigate = useNavigate();
   const { register, loading } = useAuth();
-  const [name, setName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,7 +18,7 @@ export const Register: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       setError('Please fill in all fields');
       return;
     }
@@ -28,8 +28,8 @@ export const Register: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
       return;
     }
 
@@ -39,7 +39,7 @@ export const Register: React.FC = () => {
     }
 
     try {
-      const registerData: RegisterRequest = { name, email, password };
+      const registerData: RegisterRequest = { fullName, email, password };
       await register(registerData);
       navigate('/quantity');
     } catch (err: any) {
@@ -59,13 +59,13 @@ export const Register: React.FC = () => {
           {error && <div className="auth-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="name">Full Name</label>
+            <label htmlFor="fullName">Full Name</label>
             <input
-              id="name"
+              id="fullName"
               type="text"
               placeholder="Enter your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               disabled={loading}
             />
           </div>

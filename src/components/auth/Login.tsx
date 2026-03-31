@@ -6,7 +6,7 @@ import './Auth.css';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login, loading } = useAuth();
+  const { login, startGoogleLogin, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +26,8 @@ export const Login: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
       return;
     }
 
@@ -91,6 +91,15 @@ export const Login: React.FC = () => {
             disabled={loading}
           >
             {loading ? 'Loading...' : 'Login'}
+          </button>
+
+          <button
+            type="button"
+            className="auth-button"
+            onClick={startGoogleLogin}
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : 'Continue with Google'}
           </button>
         </form>
 

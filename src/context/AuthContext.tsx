@@ -1,5 +1,5 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
-import type { User, LoginRequest, RegisterRequest } from '../types';
+import type { User, LoginRequest, RegisterRequest, OAuthCallbackParams } from '../types';
 import { authService } from '../services/authService';
 
 interface AuthContextType {
@@ -8,6 +8,8 @@ interface AuthContextType {
   isLoggedIn: boolean;
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
+  startGoogleLogin: () => void;
+  completeOAuthLogin: (params: OAuthCallbackParams) => Promise<void>;
   logout: () => void;
 }
 
@@ -20,19 +22,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Initialize user from localStorage on mount
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
+    const token = authService.getToken();
+
+    if (currentUser) {
+      setUser(currentUser);
+      return;
+    }
+
+    if (token) {
+      authService
+        .hydrateUserFromApi()
+        .then(setUser)
+        .catch(() => authService.logout());
+    }
   }, []);
 
   const login = useCallback(async (data: LoginRequest) => {
     setLoading(true);
     try {
       const response = await authService.login(data);
-      const userData: User = {
-        email: response.email,
-        role: response.role,
-        name: response.name,
-      };
-      setUser(userData);
+      setUser(response.user);
     } finally {
       setLoading(false);
     }
@@ -42,11 +51,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const response = await authService.register(data);
-      const userData: User = {
-        email: response.email,
-        role: response.role,
-        name: response.name,
-      };
+      setUser(response.user);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const startGoogleLogin = useCallback(() => {
+    authService.startGoogleLogin();
+  }, []);
+
+  const completeOAuthLogin = useCallback(async (params: OAuthCallbackParams) => {
+    setLoading(true);
+    try {
+      authService.completeOAuthCallback(params);
+      const userData = await authService.hydrateUserFromApi();
       setUser(userData);
     } finally {
       setLoading(false);
@@ -64,6 +83,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoggedIn: !!user,
     login,
     register,
+    startGoogleLogin,
+    completeOAuthLogin,
     logout,
   };
 

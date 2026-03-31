@@ -5,26 +5,26 @@ import { useAuth } from '../../hooks/useAuth';
 export const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { completeOAuthLogin } = useAuth();
 
   useEffect(() => {
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
-
-    if (code && state) {
-      // Handle OAuth callback logic here
-      // You can exchange the code for a token on your backend
-      console.log('OAuth callback - code:', code, 'state:', state);
-      // For now, redirect to quantity page if authenticated
-      if (user) {
-        navigate('/quantity');
-      } else {
-        navigate('/login');
+    const processCallback = async () => {
+      try {
+        await completeOAuthLogin({
+          accessToken: searchParams.get('accessToken') || undefined,
+          tokenType: searchParams.get('tokenType') || undefined,
+          expiresIn: searchParams.get('expiresIn') || undefined,
+          error: searchParams.get('error') || undefined,
+          message: searchParams.get('message') || undefined,
+        });
+        navigate('/quantity', { replace: true });
+      } catch {
+        navigate('/login', { replace: true });
       }
-    } else {
-      navigate('/login');
-    }
-  }, [searchParams, user, navigate]);
+    };
+
+    processCallback();
+  }, [searchParams, completeOAuthLogin, navigate]);
 
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
