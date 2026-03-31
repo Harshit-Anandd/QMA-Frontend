@@ -20,7 +20,7 @@ export const Navbar: React.FC = () => {
         </div>
         {user && (
           <div className="navbar-menu">
-            <span className="navbar-user">Welcome, {user.name}</span>
+            <span className="navbar-user">Welcome, {user.fullName}</span>
             <button className="navbar-logout" onClick={handleLogout}>
               Logout
             </button>

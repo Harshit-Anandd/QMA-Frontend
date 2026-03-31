@@ -38,7 +38,7 @@ export interface User {
 // Quantity Types
 export type QuantityType = 'length' | 'weight' | 'temperature' | 'volume';
 export type ActionType = 'comparison' | 'conversion' | 'arithmetic';
-export type ArithmeticOp = '+' | '-' | '*' | '/';
+export type ArithmeticOp = '+' | '-' | '/';
 export type MeasurementType = 'LengthUnit' | 'WeightUnit' | 'TemperatureUnit' | 'VolumeUnit';
 
 export interface QuantityUnitDTO {
@@ -57,7 +57,7 @@ export interface QuantityMeasurementDTO {
   resultString?: string;
   resultValue?: number;
   resultUnit?: string;
-  isError?: boolean;
+  error?: boolean;
   errorMessage?: string;
 }
 

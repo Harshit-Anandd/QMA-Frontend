@@ -12,6 +12,7 @@ export const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,17 +105,27 @@ export const Register: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+           <div className="form-group">
+             <label htmlFor="confirmPassword">Confirm Password</label>
+             <div className="password-input-wrapper">
+               <input
+                 id="confirmPassword"
+                 type={showConfirmPassword ? 'text' : 'password'}
+                 placeholder="Confirm your password"
+                 value={confirmPassword}
+                 onChange={(e) => setConfirmPassword(e.target.value)}
+                 disabled={loading}
+               />
+               <button
+                 type="button"
+                 className="password-toggle"
+                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                 disabled={loading}
+               >
+                 {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+               </button>
+             </div>
+           </div>
 
           <button
             type="submit"

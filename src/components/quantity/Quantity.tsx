@@ -4,7 +4,7 @@ import type { QuantityInputDTO, MeasurementType } from '../../types';
 import './Quantity.css';
 
 type ActionType = 'comparison' | 'conversion' | 'arithmetic';
-type ArithmeticOp = '+' | '-' | '*' | '/';
+type ArithmeticOp = '+' | '-' | '/';
 
 interface TypeConfig {
   label: string;
@@ -18,29 +18,29 @@ const TYPE_CONFIGS: TypeConfig[] = [
     label: 'Length',
     icon: '📏',
     measurementType: 'LengthUnit',
-    units: ['FEET', 'INCH', 'YARDS', 'CENTIMETERS'],
+    units: ['FEET', 'INCHES', 'YARDS', 'CENTIMETERS'],
   },
   {
     label: 'Weight',
     icon: '⚖️',
     measurementType: 'WeightUnit',
-    units: ['GRAM', 'KILOGRAM', 'POUND'],
+    units: ['MILLIGRAM', 'GRAM', 'KILOGRAM', 'POUND', 'TONNE'],
   },
   {
     label: 'Temperature',
     icon: '🌡️',
     measurementType: 'TemperatureUnit',
-    units: ['CELSIUS', 'FAHRENHEIT', 'KELVIN'],
+    units: ['KELVIN', 'CELSIUS', 'FAHRENHEIT'],
   },
   {
     label: 'Volume',
     icon: '🧪',
     measurementType: 'VolumeUnit',
-    units: ['LITRE', 'MILLILITRE', 'GALLON'],
+    units: ['LITRE', 'MILLILITER', 'GALLON'],
   },
 ];
 
-const ARITHMETIC_OPS: ArithmeticOp[] = ['+', '-', '*', '/'];
+const ARITHMETIC_OPS: ArithmeticOp[] = ['+', '-', '/'];
 
 export const Quantity: React.FC = () => {
   const [selectedType, setSelectedType] = useState<TypeConfig>(TYPE_CONFIGS[0]);
@@ -110,7 +110,7 @@ export const Quantity: React.FC = () => {
           unit: unit1,
           measurementType: selectedType.measurementType,
         },
-        targetQuantityDTO: {
+        thatQuantityDTO: {
           value: 0,
           unit: targetUnit,
           measurementType: selectedType.measurementType,
@@ -149,22 +149,19 @@ export const Quantity: React.FC = () => {
       };
 
       let response;
-      switch (operator) {
-        case '+':
-          response = await quantityService.add(input);
-          break;
-        case '-':
-          response = await quantityService.subtract(input);
-          break;
-        case '*':
-          response = await quantityService.divide(input);
-          break;
-        case '/':
-          response = await quantityService.divide(input);
-          break;
-        default:
-          throw new Error('Invalid operator');
-      }
+       switch (operator) {
+         case '+':
+           response = await quantityService.add(input);
+           break;
+         case '-':
+           response = await quantityService.subtract(input);
+           break;
+         case '/':
+           response = await quantityService.divide(input);
+           break;
+         default:
+           throw new Error('Invalid operator');
+       }
 
       setResult(response);
     } catch (err: any) {
@@ -228,10 +225,16 @@ export const Quantity: React.FC = () => {
           <button
             className={`tab ${action === 'arithmetic' ? 'active' : ''}`}
             onClick={() => {
+              if (selectedType.measurementType === 'TemperatureUnit') {
+                setError('Arithmetic operations are not supported for Temperature');
+                return;
+              }
               setAction('arithmetic');
               setResult(null);
               setError('');
             }}
+            disabled={selectedType.measurementType === 'TemperatureUnit'}
+            title={selectedType.measurementType === 'TemperatureUnit' ? 'Not available for Temperature' : ''}
           >
             Arithmetic
           </button>
@@ -385,15 +388,15 @@ export const Quantity: React.FC = () => {
 
         {result && (
           <div className="result-section">
-            {result.isError ? (
+            {result.error ? (
               <div className="result-error">{result.errorMessage}</div>
             ) : (
               <>
                 <h3>Result</h3>
                 {result.resultString && <p className="result-text">{result.resultString}</p>}
-                {result.resultValue !== undefined && (
+                {result.resultUnit && result.resultValue !== undefined && (
                   <p className="result-value">
-                    {result.resultValue} {result.resultUnit || ''}
+                    {result.resultValue} {result.resultUnit}
                   </p>
                 )}
               </>
